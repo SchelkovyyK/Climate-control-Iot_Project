@@ -9,7 +9,6 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// Insert a single log entry
 async function insertLog(log) {
   return pool.query(
     `INSERT INTO sensor_logs (time, temp, hum, gas, emergency)
@@ -18,13 +17,11 @@ async function insertLog(log) {
   );
 }
 
-// Get all logs
 async function getLogs() {
   const result = await pool.query("SELECT * FROM sensor_logs ORDER BY id ASC");
   return result.rows;
 }
 
-// Clear all logs
 async function clearLogs() {
   return pool.query("TRUNCATE TABLE sensor_logs RESTART IDENTITY");
 }

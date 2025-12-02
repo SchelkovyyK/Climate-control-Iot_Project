@@ -4,17 +4,27 @@ table {
   margin: 0 auto;
   table-layout: fixed;
   width: 80vw;
+  height: 50vh;
+  display: block;
+  overflow-y: scroll;
+  margin-bottom:30px ;
+}
+thead {
+  display: block;
+  position: sticky;
+  top: 0;
 }
 tbody{
     display: block;
     height:600px;
-    overflow: auto;
+    
+   
 }
 td,
 th {
   border: 1px solid #ddd;
   padding: 8px;
-  min-width: 200px;
+  min-width: 100px;
   width: 100%;
 }
 tr{

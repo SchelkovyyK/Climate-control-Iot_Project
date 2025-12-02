@@ -29,8 +29,8 @@ function Main() {
 
   return (
     <main className="main">
-      <ChartsSwiper logs={logs} />
-      <Table logs={logs} />
+      <ChartsSwiper className="screen1" logs={logs} />
+      <Table className="screen2" logs={logs} />
     </main>
   );
 }

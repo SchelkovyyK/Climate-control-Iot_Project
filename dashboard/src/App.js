@@ -35,9 +35,9 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <Main logs={logs} />;
-    </div>
+    <>
+      <Main logs={logs} />
+    </>
   );
 }
 

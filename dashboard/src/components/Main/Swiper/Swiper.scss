@@ -1,18 +1,19 @@
+/* Swiper.scss (Updated) */
 .charts-swiper-container {
-  width: 80vw;
+  width: 100vw;
   min-width: 500px;
-  margin: 20px auto;
-  
+  margin: 0px auto;
+  height: 100vh; /* Changed from 100vh to 50vh */
 }
 
 .chart-wrapper {
-  height: 50vh; 
+  /* Adjusted calc() to use 50vh */
+  height: calc(80vh - 20px - 60px); 
   padding: 10px;
   background-color: #f9f9f9;
   border-radius: 10px;
-  width: 50vw;
+  width: 70vw;
   margin: 30px auto;
-  overflow-x: auto;
   overflow-y: visible;
   min-width: 300px;
 }
