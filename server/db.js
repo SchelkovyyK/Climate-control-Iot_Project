@@ -1,3 +1,4 @@
+// db.js (Updated)
 require("dotenv").config();
 const { Pool } = require("pg");
 
@@ -26,8 +27,25 @@ async function clearLogs() {
   return pool.query("TRUNCATE TABLE sensor_logs RESTART IDENTITY");
 }
 
+// *** NEW FUNCTION ***
+async function deleteOldLogs(days = 5) {
+  // Calculate the date object for 'now minus X days'
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+
+  // SQL query to DELETE any row where the 'time' column (assuming it's a TIMESTAMP/DATE)
+  // is older than the calculated cutoff date.
+  const result = await pool.query(
+    `DELETE FROM sensor_logs WHERE time < $1 RETURNING *`,
+    [cutoffDate]
+  );
+  console.log(`Deleted ${result.rowCount} old logs.`);
+  return result.rowCount;
+}
+
 module.exports = {
   insertLog,
   getLogs,
   clearLogs,
+  deleteOldLogs, // Export the new function
 };

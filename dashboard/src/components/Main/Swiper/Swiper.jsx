@@ -1,4 +1,3 @@
-// ChartsSwiper.jsx
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
@@ -29,12 +28,9 @@ ChartJS.register(
 );
 
 export default function ChartsSwiper({ logs }) {
-  // State to manage how many logs to display, default to last 50
   const [logLimit, setLogLimit] = useState(50);
   const [inputLimit, setInputLimit] = useState(50);
 
-  // Derive the filtered data whenever 'logs' or 'logLimit' changes
-  // Use Math.max to prevent negative slice indexes if logs length is smaller than limit
   const limitedLogs = logs.slice(Math.max(logs.length - logLimit, 0));
   const timeLabels = limitedLogs.map((log) => log.time);
 
@@ -57,7 +53,6 @@ export default function ChartsSwiper({ logs }) {
     setInputLimit(50);
   };
 
-  // Modified createDataset function to highlight emergencies visually
   const createDataset = (label, dataKey, color) => ({
     labels: timeLabels,
     datasets: [
@@ -68,7 +63,6 @@ export default function ChartsSwiper({ logs }) {
         backgroundColor: `${color}33`,
         fill: true,
         tension: 0.3,
-        // Emergency Highlighting Logic:
         pointBackgroundColor: limitedLogs.map((log) =>
           log.emergency ? "yellow" : color
         ),
@@ -86,6 +80,57 @@ export default function ChartsSwiper({ logs }) {
     maintainAspectRatio: false,
     plugins: { legend: { position: "top" } },
     scales: { y: { beginAtZero: false } },
+  };
+
+  const combinedChartData = {
+    labels: timeLabels,
+    datasets: [
+      {
+        label: "Temperature (°C)",
+        data: limitedLogs.map((log) => log.temp),
+        borderColor: "red",
+        backgroundColor: "rgba(182, 67, 0)",
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: limitedLogs.map((log) =>
+          log.emergency ? "yellow" : "red"
+        ),
+        pointBorderColor: limitedLogs.map((log) =>
+          log.emergency ? "red" : "red"
+        ),
+        pointRadius: limitedLogs.map((log) => (log.emergency ? 6 : 3)),
+      },
+      {
+        label: "Humidity (%)",
+        data: limitedLogs.map((log) => log.hum),
+        borderColor: "blue",
+        backgroundColor: "rgba(0,0,255,0.2)",
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: limitedLogs.map((log) =>
+          log.emergency ? "yellow" : "blue"
+        ),
+        pointBorderColor: limitedLogs.map((log) =>
+          log.emergency ? "red" : "blue"
+        ),
+        pointRadius: limitedLogs.map((log) => (log.emergency ? 6 : 3)),
+      },
+      {
+        label: "Gas",
+        data: limitedLogs.map((log) => log.gas),
+        borderColor: "green",
+        backgroundColor: "rgba(0,255,0,0.2)",
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: limitedLogs.map((log) =>
+          log.emergency ? "yellow" : "green"
+        ),
+        pointBorderColor: limitedLogs.map((log) =>
+          log.emergency ? "red" : "green"
+        ),
+        pointRadius: limitedLogs.map((log) => (log.emergency ? 6 : 3)),
+      },
+    ],
   };
 
   return (
@@ -116,10 +161,7 @@ export default function ChartsSwiper({ logs }) {
       >
         <SwiperSlide>
           <div className="chart-wrapper">
-            <Line
-              data={createDataset("Combined Sensor Data", "temp", "red")}
-              options={options}
-            />
+            <Line data={combinedChartData} options={options} />
           </div>
         </SwiperSlide>
 
@@ -131,6 +173,7 @@ export default function ChartsSwiper({ logs }) {
             />
           </div>
         </SwiperSlide>
+
         <SwiperSlide>
           <div className="chart-wrapper">
             <Line
@@ -139,6 +182,7 @@ export default function ChartsSwiper({ logs }) {
             />
           </div>
         </SwiperSlide>
+
         <SwiperSlide>
           <div className="chart-wrapper">
             <Line

@@ -1,10 +1,12 @@
+// index.js
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const path = require("path");
 const http = require("http");
+const cron = require('node-cron'); // npm install node-cron if you want automatic cleanup
 
-const { insertLog, getLogs, clearLogs } = require("./db");
+const { insertLog, getLogs, clearLogs, deleteOldLogs } = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,14 +14,17 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static React build files
 app.use(express.static(path.join(__dirname, "../dashboard/build")));
 
 
+// --- FIX IS HERE: Declare server and io BEFORE they are referenced ---
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: { origin: "*" },
 });
+// ------------------------------------------------------------------
 
 
 function cleanAndConvertLog(logEntry) {
@@ -77,9 +82,35 @@ app.post("/api/clear", async (req, res) => {
   }
 });
 
+// Endpoint to manually trigger the old log cleanup
+app.post("/api/clear-old", async (req, res) => {
+  try {
+    const deletedCount = await deleteOldLogs(5); 
+    res.json({ status: "cleared old logs", count: deletedCount });
+  } catch (err) {
+    console.error("DB Clear Old Error:", err);
+    res.status(500).json({ status: "error" });
+  }
+});
 
+
+// Fallback for React app routing
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../dashboard/build/index.html"));
 });
 
-server.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+// Start the server using the 'server' variable
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+
+  // Schedule automatic daily cleanup at midnight (00:00)
+  cron.schedule('0 0 * * *', async () => {
+    console.log('Running daily task to delete old logs...');
+    try {
+      // Deletes logs older than 5 days
+      await deleteOldLogs(5); 
+    } catch (error) {
+      console.error('Scheduled log cleanup failed:', error);
+    }
+  });
+});
