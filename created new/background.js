@@ -67,5 +67,3 @@ chrome.runtime.onMessage.addListener((msg) => {
     clearServerLogs();
   }
 });
-
-// here is some test change
